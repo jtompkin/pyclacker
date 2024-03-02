@@ -38,6 +38,9 @@ class Stack:
             ",": (self._clear, 0),
             "help": (self._help, 0),
         }
+        self.words: dict[str, str] = {
+            "sqrt": "0.5 ^",
+        }
 
     def parse_token(self, token: str) -> None:
         action, nargs = self.tokens.get(token, (self._nop, 0))
@@ -45,6 +48,11 @@ class Stack:
             return
         if action():
             self._display()
+
+    def parse_word(self, word: str) -> None:
+        for value in self.words.get(word, " ").split(" "):
+            print(value)
+            self.push(value)
 
     def push(self, value: str) -> bool:
         try:
@@ -54,7 +62,10 @@ class Stack:
             self.stack.append(numerical_value)
             return True
         except ValueError:
-            self.parse_token(value)
+            if value in self.words:
+                self.parse_word(value)
+            else:
+                self.parse_token(value)
             return False
 
     def _display(self) -> bool:
@@ -146,7 +157,7 @@ def main(arguments: list[str] | None = None) -> None:
     args = parser.parse_args(arguments)
     if args.program is None:
         interactive()
-    single_program(args.program)
+    single_program(args.program.split(" "))
 
 
 if __name__ == "__main__":
