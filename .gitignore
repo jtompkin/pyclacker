@@ -1,0 +1,12 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Linting / formatting cache
+.ruff_cache/
+
+# Distribution / packaging
+dist/
+*.egg-info/
+
+# Environments
+.venv/
