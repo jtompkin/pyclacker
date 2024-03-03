@@ -19,7 +19,7 @@ Minor patch for program input
 
 ### Added
 
-- square root word (sqrt)
+- square root word: `sqrt`
 
 ### Fixed
 
@@ -32,8 +32,10 @@ Big boy release
 ### Added
 
 - Support for providing custom words in file
-- pi word (pi)
+- Word definition using '=' in interactive mode
+- pi word: `pi`
 
 ### Changed
 
-- Now prints stack after every push
+- Now prints stack after last push in command
+- Entering '\\' no longer exits interactive mode (Use \<Ctrl-d>)
