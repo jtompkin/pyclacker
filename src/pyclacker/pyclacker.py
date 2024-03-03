@@ -36,10 +36,12 @@ class Stack:
             "^": (self._pow, 2),
             ".": (self._display, 0),
             ",": (self._clear, 0),
+            "words": (self._words, 0),
             "help": (self._help, 0),
         }
         self.words: dict[str, str] = {
             "sqrt": "0.5 ^",
+            "pi": "3.14159265358979323846",
         }
 
     def parse_token(self, token: str) -> None:
@@ -51,7 +53,6 @@ class Stack:
 
     def parse_word(self, word: str) -> None:
         for value in self.words.get(word, " ").split(" "):
-            print(value)
             self.push(value)
 
     def push(self, value: str) -> bool:
@@ -67,6 +68,13 @@ class Stack:
             else:
                 self.parse_token(value)
             return False
+
+    def add_word(self, word: str, definition: str) -> bool:
+        if word in self.tokens:
+            sys.stderr.write(f"Cannot redefine: {word}\n")
+            return False
+        self.words.update({word: definition})
+        return True
 
     def _display(self) -> bool:
         if len(self.stack) == 0:
@@ -112,16 +120,36 @@ class Stack:
         print("'.' prints the stack, ',' clears the stack")
         return False
 
+    def _words(self) -> bool:
+        print("Defined words:")
+        for word, definition in self.words.items():
+            print(f"{word}: {definition}")
+        return False
+
     def _nop(self) -> bool:
         return False
 
 
-def interactive() -> NoReturn:
+def parse_words_file(words_file_path: str) -> Stack:
     stack = Stack()
+    with open(words_file_path, "r") as words_file:
+        good_adds = True
+        for line in words_file:
+            line_split = line.strip().split(" ")
+            if not stack.add_word(line_split[0], " ".join(line_split[1:])):
+                good_adds = False
+        if not good_adds:
+            sys.stderr.write(
+                "Run help to see list of operators that cannot be redefined\n"
+            )
+    return stack
+
+
+def interactive(stack: Stack) -> NoReturn:
     try:
         while True:
             sys.stdout.write("  > ")
-            input_string = input()
+            input_string = input().strip()
             if input_string == "\\":
                 break
             for value in input_string.split(" "):
@@ -131,8 +159,7 @@ def interactive() -> NoReturn:
     sys.exit()
 
 
-def single_program(program: list[str]) -> NoReturn:
-    stack = Stack()
+def single_program(program: list[str], stack: Stack) -> NoReturn:
     for value in program:
         stack.push(value)
     sys.exit()
@@ -149,15 +176,25 @@ def main(arguments: list[str] | None = None) -> None:
         version=f"{parser.prog}: {__version__}",
     )
     parser.add_argument(
+        "-w",
+        "--words-file",
+        dest="words_file",
+        help="Path to file containing word definitions. Reads from standard in if '-', which is the default if provided withouth an argument. One definition per line. First word per line is the word itself, the rest is the definition. Ex. sqrt 0.5 ^",
+    )
+    parser.add_argument(
         "program",
         nargs="?",
         help="Program to pass to calculator. Provide as a string with statements separated by a space. Enter interactive moded if not provided",
     )
 
     args = parser.parse_args(arguments)
-    if args.program is None:
-        interactive()
-    single_program(args.program.split(" "))
+    if args.words_file is not None:
+        stack = parse_words_file(args.words_file)
+    else:
+        stack = Stack()
+    if args.program is not None:
+        single_program(args.program.split(" "), stack)
+    interactive(stack)
 
 
 if __name__ == "__main__":
