@@ -24,7 +24,7 @@ If provided, `program` should be a single string with commands separated by a sp
 
 ### Words
 
-Custom commands (called words) can be defined in interpretive mode or in a file. To define words in a file, provide one word definition on each line. A word definition consists of the word itself and its definition, all separated by spaces. Provide the path to this file when calling the program with `-w`. A file containing the following two lines would define two words: `sqrt`, which pushes 0.5 to the stack and then calls the exponent operator, and `pi`, which pushes the value of pi to the stack
+Custom commands (called words) can be defined in interactive mode or in a file. To define words in a file, provide one word definition on each line. A word definition consists of the word itself and its definition, all separated by spaces. Provide the path to this file when calling the program with `-w`. A file containing the following two lines would define two words: `sqrt`, which pushes 0.5 to the stack and then calls the exponent operator, and `pi`, which pushes the value of pi to the stack
 
 ```
 sqrt 0.5 ^
