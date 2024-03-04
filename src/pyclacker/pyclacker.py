@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 from collections.abc import Callable
-from typing import NoReturn
 from string import digits
 import argparse
 import sys
@@ -80,6 +79,7 @@ class Stack:
             return self.parse_token(value)
 
     def add_word(self, word: str, definition: str) -> bool:
+        """Return `True` if succesfully added/deleted word"""
         if word in self.tokens or word in digits:
             sys.stderr.write(f"Cannot redefine: {word}\n")
             return False
@@ -187,7 +187,7 @@ def parse_words_file(words_file_path: str) -> Stack:
     return stack
 
 
-def interactive(stack: Stack) -> NoReturn:
+def interactive(stack: Stack) -> None:
     try:
         while True:
             sys.stdout.write("  > ")
@@ -205,13 +205,11 @@ def interactive(stack: Stack) -> NoReturn:
                         break
     except EOFError:
         sys.stdout.write("\n")
-    sys.exit()
 
 
-def single_program(program: list[str], stack: Stack) -> NoReturn:
+def single_program(program: list[str], stack: Stack) -> None:
     for value in program:
         stack.push(value)
-    sys.exit()
 
 
 def main(arguments: list[str] | None = None) -> None:
@@ -243,7 +241,8 @@ def main(arguments: list[str] | None = None) -> None:
         stack = Stack()
     if args.program is not None:
         single_program(args.program.split(" "), stack)
-    interactive(stack)
+    else:
+        interactive(stack)
 
 
 if __name__ == "__main__":
