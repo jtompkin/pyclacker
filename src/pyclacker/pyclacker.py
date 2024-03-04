@@ -38,6 +38,7 @@ class Stack:
             ".": (self._display, 0),
             ",": (self._clear, 0),
             "=": (self._nop, 0),
+            "pop": (self._pop, 0),
             "words": (self._words, 0),
             "help": (self._help, 0),
         }
@@ -46,21 +47,22 @@ class Stack:
             "pi": "3.14159265358979323846",
         }
 
-    def parse_token(self, token: str) -> None:
+    def parse_token(self, token: str) -> bool:
         action, nargs = self.tokens.get(token, (self._nop, 0))
         if len(self.stack) < nargs:
-            return
-        if action():
-            self._display()
+            return True
+        return action()
 
-    def parse_word(self, word: str) -> None:
+    def parse_word(self, word: str) -> bool:
         for value in self.words.get(word, " ").split(" "):
-            self.push(value)
+            if not self.push(value):
+                return False
+        return True
 
     def push(self, value: str, display: bool = False) -> bool:
         """
         Push value to stack and optionally print or parse operator.
-        Returns `False` if given value is '=', indicating that a word is being defined
+        Returns `False` to indicate that no more items should be pushed.
         """
         if value == "=":
             return False
@@ -71,19 +73,17 @@ class Stack:
             self.stack.append(numerical_value)
             if display:
                 self._display()
+            return True
         except ValueError:
             if value in self.words:
-                self.parse_word(value)
-            else:
-                self.parse_token(value)
-        finally:
-            return True
+                return self.parse_word(value)
+            return self.parse_token(value)
 
     def add_word(self, word: str, definition: str) -> bool:
         if word in self.tokens or word in digits:
             sys.stderr.write(f"Cannot redefine: {word}\n")
             return False
-        if definition == '':
+        if definition == "":
             del self.words[word]
             return True
         self.words.update({word: definition})
@@ -94,48 +94,68 @@ class Stack:
             print()
         else:
             print(" ".join(str(i) for i in self.stack))
-        return False
+        return True
 
     def _add(self) -> bool:
         self.stack.append(self.stack.pop() + self.stack.pop())
+        self._display()
         return True
 
     def _sub(self) -> bool:
         x = self.stack.pop()
         y = self.stack.pop()
         self.stack.append(y - x)
+        self._display()
         return True
 
     def _mult(self) -> bool:
         self.stack.append(self.stack.pop() * self.stack.pop())
+        self._display()
         return True
 
     def _div(self) -> bool:
         x = self.stack.pop()
         y = self.stack.pop()
+        if x == 0:
+            self.stack.append(y)
+            self.stack.append(x)
+            sys.stderr.write("Cannot divide by 0\n")
+            return False
         self.stack.append(y / x)
+        self._display()
         return True
 
     def _pow(self) -> bool:
         x = self.stack.pop()
         y = self.stack.pop()
+        if not float(x).is_integer() and y < 0:
+            self.stack.append(y)
+            self.stack.append(x)
+            sys.stderr.write("Cannot raise negative number to decimal power\n")
+            return False
         self.stack.append(y**x)
+        self._display()
         return True
 
     def _clear(self) -> bool:
         self.stack = []
-        return False
+        return True
+
+    def _pop(self) -> bool:
+        self.stack.pop()
+        return True
 
     def _help(self) -> bool:
         token_help = {
-            "+": "Pop two items from the stack, add them, and return the result to the stack",
-            "-": "Pop two items from the stack, subtract them, and return the result to the stack",
-            "*": "Pop two items from the stack, multiply them, and return the result to the stack",
-            "/": "Pop two items from the stack, divide them, and return the result to the stack",
-            "^": "Pop two items from the stack, raise the second item popped to the power of the first item popped, and return the result to the stack",
+            "+": "Pop two items from the stack, add them,\n\t\tand return the result to the stack",
+            "-": "Pop two items from the stack, subtract them,\n\t\tand return the result to the stack",
+            "*": "Pop two items from the stack, multiply them,\n\t\tand return the result to the stack",
+            "/": "Pop two items from the stack, divide them,\n\t\tand return the result to the stack",
+            "^": "Pop two items from the stack, raise the\n\t\tsecond item popped to the power of the first item popped,\n\t\tand return the result to the stack",
             ".": "Print all the items in the stack",
             ",": "Clear all the items from the stack",
-            "=": "Start word definition. Next item is the word itself, followed by its definition",
+            "=": "Start word definition. Next item is the word itself,\n\t\tfollowed by its definition",
+            "pop": "Pop one item from the stack, does not perform any operation.",
             "words": "Print all defined words",
             "help": "Print this help message",
         }
@@ -149,7 +169,7 @@ class Stack:
         return False
 
     def _nop(self) -> bool:
-        return False
+        return True
 
 
 def parse_words_file(words_file_path: str) -> Stack:
@@ -174,6 +194,8 @@ def interactive(stack: Stack) -> NoReturn:
             input_words = input().strip().split(" ")
             for i, value in enumerate(input_words):
                 if not stack.push(value, i + 1 == len(input_words)):
+                    if value != "=":
+                        break
                     try:
                         stack.add_word(
                             input_words[i + 1], " ".join(input_words[i + 2 :])
