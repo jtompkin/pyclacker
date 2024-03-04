@@ -90,10 +90,7 @@ class Stack:
         return True
 
     def _display(self) -> bool:
-        if len(self.stack) == 0:
-            print()
-        else:
-            print(" ".join(str(i) for i in self.stack))
+        print(" ".join(str(i) for i in self.stack))
         return True
 
     def _add(self) -> bool:
@@ -143,6 +140,7 @@ class Stack:
 
     def _pop(self) -> bool:
         self.stack.pop()
+        self._display()
         return True
 
     def _help(self) -> bool:
