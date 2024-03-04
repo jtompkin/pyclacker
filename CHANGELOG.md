@@ -45,8 +45,6 @@ Big boy release
 - Now prints stack after last push in command
 - Entering `\` no longer exits interactive mode (Use `<Ctrl-d>`)
 
-# Unreleased
-
 ## [1.0.1](https://github.com/jtompkin/pyclacker/releases/tag/v1.0.1) - 2024-03-03
 
 Errors and stuff
