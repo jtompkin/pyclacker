@@ -14,11 +14,11 @@ except ImportError:
 class Stack:
     """
     Stack with methods to push, pull, and operate. Return value of operator methods is
-    boolean of whether or not to display the stack after the operation completes
+    boolean of whether or not the operator succesfully completed the calculation
     properties:
         `tokens`[dict]:
             Keys:
-                str: String representing a call to an operator method
+                str: String used to call to an operator method
             Values:
                 tuple[Callable, int]: Operator method and number of
                 arguments the method takes from the stack
@@ -161,12 +161,12 @@ class Stack:
         }
         for token, desctiption in token_help.items():
             print(f"Operator: {token}\tDesctiption: {desctiption}")
-        return False
+        return True
 
     def _words(self) -> bool:
         for word, definition in self.words.items():
             print(f"{word}: {definition}")
-        return False
+        return True
 
     def _nop(self) -> bool:
         return True
