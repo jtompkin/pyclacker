@@ -222,7 +222,7 @@ def main(arguments: list[str] | None = None) -> None:
         "-v",
         "--version",
         action="version",
-        version=f"{parser.prog}: {__version__}",
+        version=f"{parser.prog} {__version__}",
     )
     parser.add_argument(
         "-w",
