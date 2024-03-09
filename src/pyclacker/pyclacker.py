@@ -27,7 +27,7 @@ class Stack:
         if initial is None:
             self.stack: list[float] = []
         else:
-            self.stack: list[float] = []
+            self.stack: list[float] = initial
         self.tokens: dict[str, tuple[Callable[[], bool], int]] = {
             "+": (self._add, 2),
             "-": (self._sub, 2),
