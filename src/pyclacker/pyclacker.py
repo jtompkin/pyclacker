@@ -3,6 +3,7 @@ from collections.abc import Callable
 from string import digits
 import argparse
 import sys
+from typing import Literal
 
 try:
     from .version import __version__
@@ -111,26 +112,22 @@ class Stack:
         return True
 
     def _div(self) -> bool:
-        x = self.stack.pop()
-        y = self.stack.pop()
-        if x == 0:
-            self.stack.append(y)
-            self.stack.append(x)
-            sys.stderr.write("Cannot divide by 0\n")
-            return False
-        self.stack.append(y / x)
+        divisor = self.stack.pop()  # Divisor
+        dividend = self.stack.pop()  # Dividend
+        if int(divisor) == 0:
+            return self._fail("Cannot divide by 0", dividend, divisor)
+        self.stack.append(dividend / divisor)
         self._display()
         return True
 
     def _pow(self) -> bool:
-        x = self.stack.pop()
-        y = self.stack.pop()
-        if not float(x).is_integer() and y < 0:
-            self.stack.append(y)
-            self.stack.append(x)
-            sys.stderr.write("Cannot raise negative number to decimal power\n")
-            return False
-        self.stack.append(y**x)
+        exponent = self.stack.pop()  # Exponent
+        base = self.stack.pop()  # Base
+        if not float(exponent).is_integer() and base < 0:
+            return self._fail("Negative number cannot be raised to decimal power", base, exponent)
+        if exponent < 0 and int(base) == 0:
+            return self._fail("0 cannot be raised to a negative power", base, exponent)
+        self.stack.append(base**exponent)
         self._display()
         return True
 
@@ -142,6 +139,13 @@ class Stack:
         self.stack.pop()
         self._display()
         return True
+
+    def _fail(self, message: str, *values: float, push: bool = True) -> Literal[False]:
+        if push:
+            for value in values:
+                self.stack.append(value)
+        sys.stderr.write(message + "\n")
+        return False
 
     def _help(self) -> bool:
         token_help = {
@@ -188,8 +192,7 @@ def parse_words_file(words_file_path: str) -> Stack:
 def interactive(stack: Stack) -> None:
     try:
         while True:
-            sys.stdout.write("  > ")
-            input_words = input().strip().split(" ")
+            input_words = input("  > ").strip().split(" ")
             for i, value in enumerate(input_words):
                 if not stack.push(value, i + 1 == len(input_words)):
                     if value != "=":
