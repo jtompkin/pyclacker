@@ -19,14 +19,14 @@ def subtract(stack: list[float]) -> list[float]:
     """Pop 2 values from the stack, subtract the second item popped from the first, and push the result to the stack"""
     x = stack.pop()
     y = stack.pop()
-    stack.append(y - x)
+    stack.append(_cond_float_to_int(y - x))
     display(stack)
     return stack
 
 
 def multiply(stack: list[float]) -> list[float]:
     """Pop 2 values from the stack, multiply them, and push the result to the stack"""
-    stack.append(stack.pop() * stack.pop())
+    stack.append(_cond_float_to_int(stack.pop() * stack.pop()))
     display(stack)
     return stack
 
@@ -37,7 +37,7 @@ def divide(stack: list[float]) -> list[float]:
     dividend = stack.pop()
     if int(divisor) == 0:
         return _fail(stack, "Cannot divide by 0", dividend, divisor)
-    stack.append(dividend / divisor)
+    stack.append(_cond_float_to_int(dividend / divisor))
     display(stack)
     return stack
 
@@ -55,7 +55,7 @@ def power(stack: list[float]) -> list[float]:
         )
     if exponent < 0 and int(base) == 0:
         return _fail(stack, "0 Cannot be raised to a negative power")
-    stack.append(base**exponent)
+    stack.append(_cond_float_to_int(base**exponent))
     display(stack)
     return stack
 
@@ -81,6 +81,12 @@ def nop(stack: list[float]) -> list[float]:
 def quit(_: list[float]) -> NoReturn:
     """Exit interactive mode"""
     sys.exit(0)
+
+
+def _cond_float_to_int(value: float) -> float | int:
+    if value.is_integer():
+        return int(value)
+    return value
 
 
 def _fail(
