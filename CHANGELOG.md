@@ -5,6 +5,7 @@
 - [1.0.0 - 2024-03-02](#100---2024-03-02)
 - [1.0.1 - 2024-03-03](#101---2024-03-03)
 - [1.0.2 - 2024-03-22](#102---2024-03-22)
+- [1.0.3 - 2024-03-22](#103---2024-03-22)
 
 ## TODO
 
@@ -44,7 +45,7 @@ Big boy release
 ### Changed
 
 - Now prints stack after last push in command
-- Entering `\` no longer exits interactive mode (Use `<Ctrl-d>`)
+- Entering `\` no longer exits interactive mode (Use `<Ctrl-d>` (`<Ctrl-z>` on Windows))
 
 ## [1.0.1](https://github.com/jtompkin/pyclacker/releases/tag/v1.0.1) - 2024-03-03
 
@@ -73,3 +74,16 @@ Quittin' time
 ## Changed
 
 - `,` now pops one item from the stack. Use the `clear` operator to clear the entire stack
+
+## [1.0.3](https://github.com/jtompkin/pyclacker/releases/tag/v1.0.3) - 2024-03-22
+
+Le refactor
+
+## Changed
+
+- Rewrote most of the code
+
+## Fixed
+
+- Using `,` to pop an item when the stack is empty no longer raises an error
+- Attempting to delete a word that is not defined no longer raises an error
