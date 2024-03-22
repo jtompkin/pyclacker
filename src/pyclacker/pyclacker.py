@@ -10,21 +10,21 @@ except ImportError:
     __version__ = "standalone"
     from stack import Stack
 
-"""
-def parse_words_file(words_file_path: str) -> Stack:
+def get_stack(words_file_path: str | None) -> Stack:
     stack = Stack()
+    if words_file_path is None:
+        return stack
     with open(words_file_path, "r") as words_file:
         good_adds = True
         for line in words_file:
             line_split = line.strip().split(" ")
-            if not stack.add_word(line_split[0], " ".join(line_split[1:])):
+            if not stack.add_word(['='] + line_split):
                 good_adds = False
         if not good_adds:
             sys.stderr.write(
                 "Run `help` to see list of operators that cannot be redefined\n"
             )
     return stack
-"""
 
 def interactive(stack: Stack) -> None:
     while True:
@@ -62,13 +62,7 @@ def main(arguments: list[str] | None = None) -> None:
     )
 
     args = parser.parse_args(arguments)
-    """
-    if args.words_file is not None:
-        stack = parse_words_file(args.words_file)
-    else:
-        stack = Stack()
-    """
-    stack = Stack()
+    stack = get_stack(args.words_file)
     if args.program is not None:
         single_program(args.program, stack)
     else:
