@@ -84,7 +84,7 @@ def quit(_: list[float]) -> NoReturn:
 
 
 def _cond_float_to_int(value: float) -> float | int:
-    if value.is_integer():
+    if float(value).is_integer():
         return int(value)
     return value
 
