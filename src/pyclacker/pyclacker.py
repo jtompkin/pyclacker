@@ -3,7 +3,7 @@ from collections.abc import Callable
 from string import digits
 import argparse
 import sys
-from typing import Literal
+from typing import Literal, NoReturn
 
 try:
     from .version import __version__
@@ -36,11 +36,12 @@ class Stack:
             "/": (self._div, 2),
             "^": (self._pow, 2),
             ".": (self._display, 0),
-            ",": (self._clear, 0),
+            ",": (self._pop, 0),
             "=": (self._nop, 0),
-            "pop": (self._pop, 0),
+            "clear": (self._clear, 0),
             "words": (self._words, 0),
             "help": (self._help, 0),
+            "quit": (self._quit, 0),
         }
         self.words: dict[str, str] = {
             "sqrt": "0.5 ^",
@@ -61,8 +62,8 @@ class Stack:
 
     def push(self, value: str, display: bool = False) -> bool:
         """
-        Push value to stack and optionally print or parse operator.
-        Returns `False` to indicate that no more items should be pushed.
+        Push value to stack and optionally print, or parse operator.
+        Returns `False` if no more items should be pushed.
         """
         if value == "=":
             return False
@@ -112,8 +113,8 @@ class Stack:
         return True
 
     def _div(self) -> bool:
-        divisor = self.stack.pop()  # Divisor
-        dividend = self.stack.pop()  # Dividend
+        divisor = self.stack.pop()
+        dividend = self.stack.pop()
         if int(divisor) == 0:
             return self._fail("Cannot divide by 0", dividend, divisor)
         self.stack.append(dividend / divisor)
@@ -121,10 +122,12 @@ class Stack:
         return True
 
     def _pow(self) -> bool:
-        exponent = self.stack.pop()  # Exponent
-        base = self.stack.pop()  # Base
+        exponent = self.stack.pop()
+        base = self.stack.pop()
         if not float(exponent).is_integer() and base < 0:
-            return self._fail("Negative number cannot be raised to decimal power", base, exponent)
+            return self._fail(
+                "Negative number cannot be raised to decimal power", base, exponent
+            )
         if exponent < 0 and int(base) == 0:
             return self._fail("0 cannot be raised to a negative power", base, exponent)
         self.stack.append(base**exponent)
@@ -155,11 +158,12 @@ class Stack:
             "/": "Pop two items from the stack, divide them,\n\t\tand return the result to the stack",
             "^": "Pop two items from the stack, raise the\n\t\tsecond item popped to the power of the first item popped,\n\t\tand return the result to the stack",
             ".": "Print all the items in the stack",
-            ",": "Clear all the items from the stack",
+            ",": "Pop one item from the stack, does not perform any operation.",
             "=": "Start word definition. Next item is the word itself,\n\t\tfollowed by its definition",
-            "pop": "Pop one item from the stack, does not perform any operation.",
+            "clear": "Clear all the items from the stack",
             "words": "Print all defined words",
             "help": "Print this help message",
+            "quit": "Exit interactive mode",
         }
         for token, desctiption in token_help.items():
             print(f"Operator: {token}\tDesctiption: {desctiption}")
@@ -172,6 +176,9 @@ class Stack:
 
     def _nop(self) -> bool:
         return True
+
+    def _quit(self) -> NoReturn:
+        sys.exit(0)
 
 
 def parse_words_file(words_file_path: str) -> Stack:
@@ -190,22 +197,21 @@ def parse_words_file(words_file_path: str) -> Stack:
 
 
 def interactive(stack: Stack) -> None:
-    try:
-        while True:
+    while True:
+        try:
             input_words = input("  > ").strip().split(" ")
-            for i, value in enumerate(input_words):
-                if not stack.push(value, i + 1 == len(input_words)):
-                    if value != "=":
-                        break
-                    try:
-                        stack.add_word(
-                            input_words[i + 1], " ".join(input_words[i + 2 :])
-                        )
-                        break
-                    except IndexError:
-                        break
-    except EOFError:
-        sys.stdout.write("\n")
+        except EOFError:
+            sys.stdout.write("\n")
+            return
+        for i, value in enumerate(input_words):
+            if not stack.push(value, i + 1 == len(input_words)):
+                if value != "=":
+                    break
+                try:
+                    stack.add_word(input_words[i + 1], " ".join(input_words[i + 2 :]))
+                    break
+                except IndexError:
+                    break
 
 
 def single_program(program: list[str], stack: Stack) -> None:
