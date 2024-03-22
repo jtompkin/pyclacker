@@ -10,6 +10,7 @@ except ImportError:
     __version__ = "standalone"
     from stack import Stack
 
+
 def get_stack(words_file_path: str | None) -> Stack:
     stack = Stack()
     if words_file_path is None:
@@ -18,7 +19,7 @@ def get_stack(words_file_path: str | None) -> Stack:
         good_adds = True
         for line in words_file:
             line_split = line.strip().split(" ")
-            if not stack.add_word(['='] + line_split):
+            if not stack.add_word(["="] + line_split):
                 good_adds = False
         if not good_adds:
             sys.stderr.write(
@@ -26,10 +27,11 @@ def get_stack(words_file_path: str | None) -> Stack:
             )
     return stack
 
-def interactive(stack: Stack) -> None:
+
+def interactive(stack: Stack, counter: bool) -> None:
     while True:
         try:
-            stack.parse_input(input("  > "))
+            stack.parse_input(input(f" {len(stack.stack) if counter else ''} > "))
         except EOFError:
             sys.stdout.write("\n")
             return
@@ -50,6 +52,13 @@ def main(arguments: list[str] | None = None) -> None:
         version=f"{parser.prog} {__version__}",
     )
     parser.add_argument(
+        "-c",
+        "--no-counter",
+        dest="counter",
+        action="store_false",
+        help="Do not display stack counter in interactive mode",
+    )
+    parser.add_argument(
         "-w",
         "--words-file",
         dest="words_file",
@@ -66,7 +75,7 @@ def main(arguments: list[str] | None = None) -> None:
     if args.program is not None:
         single_program(args.program, stack)
     else:
-        interactive(stack)
+        interactive(stack, args.counter)
 
 
 if __name__ == "__main__":

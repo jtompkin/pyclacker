@@ -82,6 +82,7 @@ Le refactor
 ## Changed
 
 - Rewrote most of the code
+- Actions now return integers if they can
 
 ## Fixed
 
