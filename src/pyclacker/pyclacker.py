@@ -112,8 +112,8 @@ class Stack:
         return True
 
     def _div(self) -> bool:
-        divisor = self.stack.pop()  # Divisor
-        dividend = self.stack.pop()  # Dividend
+        divisor = self.stack.pop()
+        dividend = self.stack.pop()
         if int(divisor) == 0:
             return self._fail("Cannot divide by 0", dividend, divisor)
         self.stack.append(dividend / divisor)
@@ -121,8 +121,8 @@ class Stack:
         return True
 
     def _pow(self) -> bool:
-        exponent = self.stack.pop()  # Exponent
-        base = self.stack.pop()  # Base
+        exponent = self.stack.pop()
+        base = self.stack.pop()
         if not float(exponent).is_integer() and base < 0:
             return self._fail("Negative number cannot be raised to decimal power", base, exponent)
         if exponent < 0 and int(base) == 0:
