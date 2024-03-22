@@ -4,6 +4,7 @@
 - [0.1.1 - 2024-03-02](#011---2024-03-02)
 - [1.0.0 - 2024-03-02](#100---2024-03-02)
 - [1.0.1 - 2024-03-03](#101---2024-03-03)
+- [1.0.2 - 2024-03-22](#102---2024-03-22)
 
 ## TODO
 
@@ -60,3 +61,15 @@ Errors and stuff
 ## Changed
 
 - Encountering an invalid calculation will now stop command parsing
+
+## [1.0.2](https://github.com/jtompkin/pyclacker/releases/tag/v1.0.2) - 2024-03-22
+
+Quittin' time
+
+### Added
+
+- `quit` operator: Exits interactive mode
+
+## Changed
+
+- `,` now pops one item from the stack. Use the `clear` operator to clear the entire stack
