@@ -232,7 +232,7 @@ def main(arguments: list[str] | None = None) -> None:
     parser.add_argument(
         "program",
         nargs="?",
-        help="Program to pass to calculator. Provide as a string with statements separated by a space. Enter interactive moded if not provided",
+        help="Program to pass to calculator. Provide as a string with statements separated by a space. Enter interactive mode if not provided",
     )
 
     args = parser.parse_args(arguments)
