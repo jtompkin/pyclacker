@@ -36,17 +36,6 @@ class Stack:
         self.parse_length: int = 0
         self.current: int = 0
 
-    def parse_input(self, input_string: str) -> None:
-        words = input_string.strip().split(" ")
-        self.parse_length = len(words)
-        self.current = 0
-        for token in words:
-            if token == "=":
-                self.add_word(words[self.current :])
-                return
-            self._parse_token(token)
-            self.current += 1
-
     def add_word(self, definition: list[str]) -> bool:
         """
         Add word and definition. `definition` should include
@@ -57,11 +46,23 @@ class Stack:
         if len(definition) == 2:
             self.words.pop(definition[1], None)
             return True
-        if definition[1] in self.operators or definition[1] in digits:
-            sys.stderr.write(f"Cannot redefine: {definition[1]}")
+        forbidden = list(self.operators) + list(digits) + ['=']
+        if definition[1] in forbidden:
+            sys.stderr.write(f"Cannot redefine: {definition[1]}\n")
             return False
         self.words.update({definition[1]: definition[2:]})
         return True
+
+    def parse_input(self, input_string: str) -> None:
+        words = input_string.strip().split(" ")
+        self.parse_length = len(words)
+        self.current = 0
+        for token in words:
+            if token == "=":
+                self.add_word(words[self.current :])
+                return
+            self._parse_token(token)
+            self.current += 1
 
     def _parse_token(self, token: str) -> None:
         if token in self.words:
@@ -76,6 +77,14 @@ class Stack:
             self._parse_token(token)
             self.current += 1
 
+    def _push_value(self, value: float) -> None:
+        if value.is_integer():
+            self.stack.append(int(value))
+        else:
+            self.stack.append(value)
+        if self.current == self.parse_length - 1:
+            sacs.display(self.stack)
+
     def _do_operator(self, token: str) -> None:
         operator = self.operators.get(token, StackOperator())
         if len(self.stack) < operator.pops:
@@ -84,14 +93,6 @@ class Stack:
             self.stack = operator(self.stack)
             return
         operator(self)
-
-    def _push_value(self, value: float) -> None:
-        if value.is_integer():
-            self.stack.append(int(value))
-        else:
-            self.stack.append(value)
-        if self.current == self.parse_length - 1:
-            sacs.display(self.stack)
 
 
 class StackOperator:
