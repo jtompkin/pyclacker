@@ -25,13 +25,15 @@ def get_stack(words_file_path: str | None) -> Stack:
             sys.stderr.write(
                 "Run `help` to see list of operators that cannot be redefined\n"
             )
-    return stack
+        return stack
 
 
-def interactive(stack: Stack, counter: bool) -> None:
+def interactive(stack: Stack, display_counter: bool) -> None:
     while True:
         try:
-            stack.parse_input(input(f" {len(stack.stack) if counter else ''} > "))
+            stack.parse_input(
+                input(f" {len(stack.stack) if display_counter else ''} > ")
+            )
         except EOFError:
             sys.stdout.write("\n")
             return
@@ -54,7 +56,7 @@ def main(arguments: list[str] | None = None) -> None:
     parser.add_argument(
         "-c",
         "--no-counter",
-        dest="counter",
+        dest="display_counter",
         action="store_false",
         help="Do not display stack counter in interactive mode",
     )
@@ -69,13 +71,12 @@ def main(arguments: list[str] | None = None) -> None:
         nargs="?",
         help="Program to pass to calculator. Provide as a string with statements separated by a space. Enter interactive mode if not provided",
     )
-
     args = parser.parse_args(arguments)
     stack = get_stack(args.words_file)
     if args.program is not None:
         single_program(args.program, stack)
     else:
-        interactive(stack, args.counter)
+        interactive(stack, args.display_counter)
 
 
 if __name__ == "__main__":

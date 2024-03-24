@@ -22,6 +22,7 @@ class Stack:
             "*": StackOperator(2, 1, sacs.multiply),
             "/": StackOperator(2, 1, sacs.divide),
             "^": StackOperator(2, 1, sacs.power),
+            "!": StackOperator(1, 1, sacs.factorial),
             ".": StackOperator(0, 0, sacs.display),
             ",": StackOperator(1, 0, sacs.pop),
             "clear": StackOperator(0, 0, sacs.clear),
@@ -46,7 +47,7 @@ class Stack:
         if len(definition) == 2:
             self.words.pop(definition[1], None)
             return True
-        forbidden = list(self.operators) + list(digits) + ['=']
+        forbidden = list(self.operators) + list(digits) + ["="]
         if definition[1] in forbidden:
             sys.stderr.write(f"Cannot redefine: {definition[1]}\n")
             return False
