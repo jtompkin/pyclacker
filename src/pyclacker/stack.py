@@ -90,10 +90,9 @@ class Stack:
         operator = self.operators.get(token, StackOperator())
         if len(self.stack) < operator.pops:
             return
-        if isinstance(operator, StackOperator):
-            self.stack = operator(self.stack)
-            return
-        operator(self)
+        if isinstance(operator, HelpOperator):
+            return operator(self)
+        self.stack = operator(self.stack)
 
 
 class StackOperator:
@@ -130,8 +129,9 @@ class HelpOperator:
 
 def _words(stack: Stack) -> None:
     """Print all defined words to the screen"""
-    for word in stack.words:
-        print(f"{word}: {' '.join(i for i in stack.words[word])}")
+    for word, definition in stack.words.items():
+        print(f"{word}: {' '.join(definition)}")
+        #print(f"{word}: {' '.join(i for i in stack.words[word])}")
 
 
 def _help(stack: Stack) -> None:
