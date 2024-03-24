@@ -23,6 +23,11 @@ class Stack:
             "/": StackOperator(2, 1, sacs.divide),
             "^": StackOperator(2, 1, sacs.power),
             "!": StackOperator(1, 1, sacs.factorial),
+            "deg": StackOperator(1, 1, sacs.degrees),
+            "rad": StackOperator(1, 1, sacs.radians),
+            "sin": StackOperator(1, 1, sacs.sine),
+            "cos": StackOperator(1, 1, sacs.cosine),
+            "round": StackOperator(2, 1, sacs.round_value),
             ".": StackOperator(0, 0, sacs.display),
             ",": StackOperator(1, 0, sacs.pop),
             "clear": StackOperator(0, 0, sacs.clear),
@@ -32,7 +37,7 @@ class Stack:
         }
         self.words: dict[str, list[str]] = {
             "sqrt": ["0.5", "^"],
-            "pi": ["3.141592654"],
+            "pi": ["3.141592653589793"],
         }
         self.parse_length: int = 0
         self.current: int = 0
@@ -131,7 +136,6 @@ def _words(stack: Stack) -> None:
     """Print all defined words to the screen"""
     for word, definition in stack.words.items():
         print(f"{word}: {' '.join(definition)}")
-        #print(f"{word}: {' '.join(i for i in stack.words[word])}")
 
 
 def _help(stack: Stack) -> None:

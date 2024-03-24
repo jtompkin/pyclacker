@@ -1,6 +1,7 @@
 import sys
 from typing import NoReturn
-from math import factorial as fact
+import math
+
 
 def display(stack: list[float]) -> list[float]:
     """Print the stack to the screen"""
@@ -17,21 +18,21 @@ def subtract(stack: list[float]) -> list[float]:
     """Pop 2 values from the stack, subtract the second item popped from the first, and push the result to the stack"""
     x = stack.pop()
     y = stack.pop()
-    return _push(stack, _cond_float_to_int(y - x))
+    return _push(stack, y - x)
 
 
 def multiply(stack: list[float]) -> list[float]:
     """Pop 2 values from the stack, multiply them, and push the result to the stack"""
-    return _push(stack, _cond_float_to_int(stack.pop() * stack.pop()))
+    return _push(stack, stack.pop() * stack.pop())
 
 
 def divide(stack: list[float]) -> list[float]:
     """Pop 2 values from the stack, divide the second value popped by the first, and push the result to the stack"""
     divisor = stack.pop()
-    dividend = stack.pop()
     if int(divisor) == 0:
-        return _fail(stack, "Cannot divide by 0", dividend, divisor)
-    return _push(stack, _cond_float_to_int(dividend / divisor))
+        return _fail(stack, "Cannot divide by 0", divisor)
+    dividend = stack.pop()
+    return _push(stack, dividend / divisor)
 
 
 def power(stack: list[float]) -> list[float]:
@@ -47,7 +48,7 @@ def power(stack: list[float]) -> list[float]:
         )
     if exponent < 0 and int(base) == 0:
         return _fail(stack, "0 Cannot be raised to a negative power")
-    return _push(stack, _cond_float_to_int(base**exponent))
+    return _push(stack, base**exponent)
 
 
 def factorial(stack: list[float]) -> list[float]:
@@ -57,7 +58,37 @@ def factorial(stack: list[float]) -> list[float]:
         return _fail(stack, "Cannot take the factorial of non-integer number", x)
     if x < 0:
         return _fail(stack, "Cannot take the factorial of negative number", x)
-    return _push(stack, fact(x))
+    return _push(stack, math.factorial(x))
+
+
+def degrees(stack: list[float]) -> list[float]:
+    """Pop 1 value from the stack, convert it to degrees, and push the result to the stack"""
+    return _push(stack, math.degrees(stack.pop()))
+
+
+def radians(stack: list[float]) -> list[float]:
+    """Pop 1 value from the stack, convert it to radians, and push the result to the stack"""
+    return _push(stack, math.radians(stack.pop()))
+
+
+def sine(stack: list[float]) -> list[float]:
+    """Pop 1 value from the stack as radians, take its sine, and push the result to the stack"""
+    return _push(stack, math.sin(stack.pop()))
+
+
+def cosine(stack: list[float]) -> list[float]:
+    """Pop 1 value from the stack as radians, take its cosine, and push the result to the stack"""
+    return _push(stack, math.cos(stack.pop()))
+
+
+def round_value(stack: list[float]) -> list[float]:
+    """Pop 2 values from the stack, round the second item popped to the precision of the first, and push the result to the stack"""
+    precision = stack.pop()
+    if not float(precision).is_integer():
+        return _fail(stack, "Precision must be an integer", precision)
+    x = stack.pop()
+    return _push(stack, round(x, int(precision)))
+
 
 def pop(stack: list[float]) -> list[float]:
     """Pop a single value from the stack"""
@@ -89,7 +120,7 @@ def _cond_float_to_int(value: float) -> float | int:
 
 
 def _push(stack: list[float], value: float | int) -> list[float]:
-    stack.append(value)
+    stack.append(_cond_float_to_int(value))
     display(stack)
     return stack
 
