@@ -6,6 +6,7 @@
 - [1.0.1 - 2024-03-03](#101---2024-03-03)
 - [1.0.2 - 2024-03-22](#102---2024-03-22)
 - [1.0.3 - 2024-03-22](#103---2024-03-22)
+- [1.1.0 - 2024-03-23](#110---2024-03-23)
 
 ## TODO
 
@@ -88,3 +89,11 @@ Le refactor
 
 - Using `,` to pop an item when the stack is empty no longer raises an error
 - Attempting to delete a word that is not defined no longer raises an error
+
+## [1.1.0](https://github.com/jtompkin/pyclacker/releases/tag/v1.1.0) - 2024-03-23
+
+I can never type factroial right
+
+### Added
+
+- `!` operator: Take factorial of value from stack
