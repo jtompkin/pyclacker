@@ -85,7 +85,7 @@ def round_value(stack: list[float]) -> list[float]:
     """Pop 2 values from the stack, round the second item popped to the precision of the first, and push the result to the stack"""
     precision = stack.pop()
     if not float(precision).is_integer():
-        return _fail(stack, "Precision must be an integer", precision)
+        return _fail(stack, "Precision must be an integer")
     x = stack.pop()
     return _push(stack, round(x, int(precision)))
 
