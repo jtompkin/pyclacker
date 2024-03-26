@@ -18,7 +18,7 @@ pip3 install pyclacker
 ## Usage
 
 ```bash
-pyclacker [-h] [-v] [-w WORDS_FILE] [program]
+pyclacker [-h] [-c] [-v] [-n] [-w WORDS_FILE] [program]
 ```
 If provided, `program` should be a single string with commands separated by a space. Running without providing a program will enter interactive mode. In interactive mode, type a number and press enter to push to the stack. Enter an operator and press enter to perform the operation on the stack. Enter multiple commands separated by a space and press enter to execute them in order. Enter `help` to view available operators.
 
