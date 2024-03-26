@@ -48,17 +48,24 @@ def main(arguments: list[str] | None = None) -> None:
         prog="pyclacker", description="Reverse polish notation (RPN) calculator"
     )
     parser.add_argument(
+        "-c",
+        "--calc-help",
+        dest="calc_help",
+        action="store_true",
+        help="show information about available operators and exit",
+    )
+    parser.add_argument(
         "-v",
         "--version",
         action="version",
         version=f"{parser.prog} {__version__}",
     )
     parser.add_argument(
-        "-c",
+        "-n",
         "--no-counter",
         dest="display_counter",
         action="store_false",
-        help="Do not display stack counter in interactive mode",
+        help="do not display stack counter in interactive mode",
     )
     parser.add_argument(
         "-w",
@@ -73,10 +80,13 @@ def main(arguments: list[str] | None = None) -> None:
     )
     args = parser.parse_args(arguments)
     stack = get_stack(args.words_file)
+    if args.calc_help:
+        stack.parse_input("help")
+        return
     if args.program is not None:
         single_program(args.program, stack)
-    else:
-        interactive(stack, args.display_counter)
+        return
+    interactive(stack, args.display_counter)
 
 
 if __name__ == "__main__":

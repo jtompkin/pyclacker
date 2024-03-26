@@ -2,7 +2,7 @@ from collections.abc import Callable
 from shutil import get_terminal_size
 from textwrap import wrap
 from string import digits
-import sys
+import sys, os
 
 try:
     import pyclacker.stack_actions as sacs
@@ -23,16 +23,22 @@ class Stack:
             "/": StackOperator(2, 1, sacs.divide),
             "^": StackOperator(2, 1, sacs.power),
             "!": StackOperator(1, 1, sacs.factorial),
+            "deg": StackOperator(1, 1, sacs.degrees),
+            "rad": StackOperator(1, 1, sacs.radians),
+            "sin": StackOperator(1, 1, sacs.sine),
+            "cos": StackOperator(1, 1, sacs.cosine),
+            "round": StackOperator(2, 1, sacs.round_value),
             ".": StackOperator(0, 0, sacs.display),
             ",": StackOperator(1, 0, sacs.pop),
             "clear": StackOperator(0, 0, sacs.clear),
             "quit": StackOperator(0, 0, sacs.quit),
+            "cls": HelpOperator(_clear),
             "words": HelpOperator(_words),
             "help": HelpOperator(_help),
         }
         self.words: dict[str, list[str]] = {
             "sqrt": ["0.5", "^"],
-            "pi": ["3.141592654"],
+            "pi": ["3.141592653589793"],
         }
         self.parse_length: int = 0
         self.current: int = 0
@@ -90,10 +96,9 @@ class Stack:
         operator = self.operators.get(token, StackOperator())
         if len(self.stack) < operator.pops:
             return
-        if isinstance(operator, StackOperator):
-            self.stack = operator(self.stack)
-            return
-        operator(self)
+        if isinstance(operator, HelpOperator):
+            return operator(self)
+        self.stack = operator(self.stack)
 
 
 class StackOperator:
@@ -130,19 +135,24 @@ class HelpOperator:
 
 def _words(stack: Stack) -> None:
     """Print all defined words to the screen"""
-    for word in stack.words:
-        print(f"{word}: {' '.join(i for i in stack.words[word])}")
+    for word, definition in stack.words.items():
+        print(f"{word}: {' '.join(definition)}")
 
 
 def _help(stack: Stack) -> None:
     """Print information about available operators to the screen"""
     extra_space = 2
-    max_length = max(len(i) for i in stack.operators) + 10
+    prefix = "operator: "
+    max_length = max(len(i) for i in stack.operators) + len(prefix)
     term_width = get_terminal_size()[0] - (max_length + extra_space)
     for operator in stack.operators:
-        operator_help = f"operator: {operator}"
+        operator_help = f"{prefix}{operator}"
         padding = max_length - len(operator_help) + extra_space
-        description_help = f"description: {stack.operators[operator].action.__doc__}"
+        description_help = stack.operators[operator].action.__doc__
+        if description_help is None:
+            description_help = ""
+        else:
+            description_help = f'"{description_help}"'
         sys.stdout.write(operator_help + " " * padding)
         for chunk in wrap(
             description_help,
@@ -150,3 +160,8 @@ def _help(stack: Stack) -> None:
             subsequent_indent=" " * (max_length + extra_space),
         ):
             print(chunk)
+
+
+def _clear(_: Stack) -> None:
+    """Clear the terminal screen"""
+    os.system("clear")
