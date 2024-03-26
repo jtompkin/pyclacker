@@ -142,12 +142,17 @@ def _words(stack: Stack) -> None:
 def _help(stack: Stack) -> None:
     """Print information about available operators to the screen"""
     extra_space = 2
-    max_length = max(len(i) for i in stack.operators) + 10
+    prefix = "operator: "
+    max_length = max(len(i) for i in stack.operators) + len(prefix)
     term_width = get_terminal_size()[0] - (max_length + extra_space)
     for operator in stack.operators:
-        operator_help = f"operator: {operator}"
+        operator_help = f"{prefix}{operator}"
         padding = max_length - len(operator_help) + extra_space
-        description_help = f"description: {stack.operators[operator].action.__doc__}"
+        description_help = stack.operators[operator].action.__doc__
+        if description_help is None:
+            description_help = ''
+        else:
+            description_help = f'"{description_help}"'
         sys.stdout.write(operator_help + " " * padding)
         for chunk in wrap(
             description_help,
