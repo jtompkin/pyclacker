@@ -7,6 +7,7 @@
 - [1.0.2 - 2024-03-22](#102---2024-03-22)
 - [1.0.3 - 2024-03-22](#103---2024-03-22)
 - [1.1.0 - 2024-03-23](#110---2024-03-23)
+- [1.1.1 - 2024-03-26](#111---2024-03-26)
 
 ## TODO
 
@@ -97,3 +98,14 @@ I can never type factroial right
 ### Added
 
 - `!` operator: Take factorial of value from stack
+
+## [1.1.1](https://github.com/jtompkin/pyclacker/releases/tag/v1.1.1) - 2024-03-26
+
+Trig and other nice things
+
+### Added
+
+- `sin` operator: take sine of value from stack
+- `cos` operator: take cosine of value from stack
+- `round` operator: round value from stack to given precision
+- `cls` operator: clear the terminal screen
