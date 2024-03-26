@@ -2,7 +2,7 @@ from collections.abc import Callable
 from shutil import get_terminal_size
 from textwrap import wrap
 from string import digits
-import sys
+import sys, os
 
 try:
     import pyclacker.stack_actions as sacs
@@ -32,6 +32,7 @@ class Stack:
             ",": StackOperator(1, 0, sacs.pop),
             "clear": StackOperator(0, 0, sacs.clear),
             "quit": StackOperator(0, 0, sacs.quit),
+            "cls": HelpOperator(_clear),
             "words": HelpOperator(_words),
             "help": HelpOperator(_help),
         }
@@ -154,3 +155,8 @@ def _help(stack: Stack) -> None:
             subsequent_indent=" " * (max_length + extra_space),
         ):
             print(chunk)
+
+
+def _clear(_: Stack) -> None:
+    """Clear the terminal screen"""
+    os.system("clear")
