@@ -109,3 +109,8 @@ Trig and other nice things
 - `cos` operator: take cosine of value from stack
 - `round` operator: round value from stack to given precision
 - `cls` operator: clear the terminal screen
+- `-c` option to cli: print information on operators and exit
+
+### Changed
+
+- Help screen formatting. I think it looks nicer.
