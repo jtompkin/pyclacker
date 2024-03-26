@@ -150,7 +150,7 @@ def _help(stack: Stack) -> None:
         padding = max_length - len(operator_help) + extra_space
         description_help = stack.operators[operator].action.__doc__
         if description_help is None:
-            description_help = ''
+            description_help = ""
         else:
             description_help = f'"{description_help}"'
         sys.stdout.write(operator_help + " " * padding)
