@@ -2,13 +2,8 @@
 import argparse
 import sys
 
-
-try:
-    from .version import __version__
-    from .stack import Stack
-except ImportError:
-    __version__ = "standalone"
-    from stack import Stack
+from .version import __version__
+from .stack import Stack
 
 
 def get_stack(words_file_path: str | None) -> Stack:

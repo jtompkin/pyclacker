@@ -1,6 +1,6 @@
-import sys
 from typing import NoReturn
 import math
+import sys
 
 
 def display(stack: list[float]) -> list[float]:
