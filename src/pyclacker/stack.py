@@ -161,4 +161,7 @@ def _help(stack: Stack) -> None:
 
 def _clear(_: Stack) -> None:
     """Clear the terminal screen"""
-    os.system("clear")
+    if sys.platform.startswith("win32"):
+        os.system("cls")
+    elif sys.platform.startswith(('linux', 'darwin')):
+        os.system("clear")
