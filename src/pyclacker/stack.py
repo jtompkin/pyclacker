@@ -3,8 +3,9 @@ from shutil import get_terminal_size
 from textwrap import wrap
 from string import digits
 import sys, os
+from typing import Any
 
-from . import stack_actions as sacs
+import pyclacker.stack_actions as sacs
 
 
 class Stack:
@@ -98,21 +99,21 @@ class Stack:
         self.stack = operator(self.stack)
 
 
-class StackOperator:
-    """Operator that operates directly on the stack of a `Stack` instance"""
+class Operator:
+    """Operates on the stack"""
 
     def __init__(
         self,
         pops: int = 0,
         pushes: int = 0,
-        action: Callable[[list[float]], list[float]] = sacs.nop,
+        action: Callable[[Any], list[int | float] | None] = sacs.nop,
     ) -> None:
         self.pops = pops
         self.pushes = pushes
         self.action = action
 
-    def __call__(self, stack: list[float]) -> list[float]:
-        return self.action(stack)
+    def __call__(self, value: Any) -> list[int | float] | None:
+        return self.action(value)
 
 
 class HelpOperator:

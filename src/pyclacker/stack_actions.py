@@ -1,138 +1,175 @@
+from collections.abc import Callable
 from typing import NoReturn
 import math
 import sys
 
 
-def display(stack: list[float]) -> list[float]:
-    """Print the stack to the screen"""
-    print(" ".join(str(i) for i in stack))
-    return stack
+class Stack:
+    def __init__(self, initial: list[int | float] | None = None) -> None:
+        if initial is None:
+            self._values: list[int | float] = []
+        else:
+            self._values = initial
+
+    @property
+    def values(self) -> list[int | float]:
+        return self._values
+
+    @values.setter
+    def values(self, value: list[int | float]):
+        self._values = value
+
+    def push(self, *values: int | float, display: bool = True) -> None:
+        """Push each value from `values` onto stack and optionally display"""
+        for value in values:
+            if float(value).is_integer():
+                self.values.append(int(value))
+            else:
+                self.values.append(value)
+        if display:
+            print(self)
+
+    def pop(self, index: int = -1) -> int | float:
+        """Return popped value from stack"""
+        return self.values.pop(index)
+
+    def __repr__(self) -> str:
+        return " ".join(str(i) for i in self.values)
 
 
-def add(stack: list[float]) -> list[float]:
+def nop(_: Stack) -> None:
+    """Do Nothing"""
+    return
+
+
+class Operator:
+    """Operates on the stack"""
+
+    def __init__(
+        self,
+        pops: int = 0,
+        pushes: int = 0,
+        action: Callable[[Stack], None] = nop,
+    ) -> None:
+        self.pops = pops
+        self.pushes = pushes
+        self.action = action
+
+    def __call__(self, stack: Stack) -> None:
+        self.action(stack)
+
+
+def add(stack: Stack) -> None:
     """Pop 2 values from the stack, add them, and push the result to the stack"""
-    return _push(stack, stack.pop() + stack.pop())
+    stack.push(stack.pop() + stack.pop())
 
 
-def subtract(stack: list[float]) -> list[float]:
+def subtract(stack: Stack) -> None:
     """Pop 2 values from the stack, subtract the second item popped from the first, and push the result to the stack"""
     x = stack.pop()
     y = stack.pop()
-    return _push(stack, y - x)
+    stack.push(y - x)
 
 
-def multiply(stack: list[float]) -> list[float]:
+def multiply(stack: Stack) -> None:
     """Pop 2 values from the stack, multiply them, and push the result to the stack"""
-    return _push(stack, stack.pop() * stack.pop())
+    stack.push(stack.pop() * stack.pop())
 
 
-def divide(stack: list[float]) -> list[float]:
+def _fail(stack: Stack, message: str, *values: int | float) -> None:
+    """
+    Call when a computation cannot be done. Prints a message to standard error,
+    and pushes `values` back onto the stack
+    """
+    stack.push(*values, display=False)
+    sys.stderr.write(message + "\n")
+
+
+def divide(stack: Stack) -> None:
     """Pop 2 values from the stack, divide the second value popped by the first, and push the result to the stack"""
     divisor = stack.pop()
     if int(divisor) == 0:
-        return _fail(stack, "Cannot divide by 0", divisor)
+        _fail(stack, "Cannot divide by 0", divisor)
+        return
     dividend = stack.pop()
-    return _push(stack, dividend / divisor)
+    stack.push(dividend / divisor)
 
 
-def power(stack: list[float]) -> list[float]:
+def power(stack: Stack) -> None:
     """Pop 2 values from the stack, raise the second value popped to the power of the first, and push the result to the stack"""
     exponent = stack.pop()
     base = stack.pop()
     if not float(exponent).is_integer() and base < 0:
-        return _fail(
+        _fail(
             stack,
             "Negative number cannot be raised to non-integer power",
             base,
             exponent,
         )
+        return
     if exponent < 0 and int(base) == 0:
-        return _fail(stack, "0 Cannot be raised to a negative power")
-    return _push(stack, base**exponent)
+        _fail(stack, "0 Cannot be raised to a negative power")
+        return
+    stack.push(base**exponent)
 
 
-def factorial(stack: list[float]) -> list[float]:
+def factorial(stack: Stack) -> None:
     """Pop 1 value from the stack, take its factorial, and push the result to the stack"""
     x = stack.pop()
     if not isinstance(x, int):
-        return _fail(stack, "Cannot take the factorial of non-integer number", x)
+        _fail(stack, "Cannot take the factorial of non-integer number", x)
+        return
     if x < 0:
-        return _fail(stack, "Cannot take the factorial of negative number", x)
-    return _push(stack, math.factorial(x))
+        _fail(stack, "Cannot take the factorial of negative number", x)
+        return
+    stack.push(math.factorial(x))
 
 
-def degrees(stack: list[float]) -> list[float]:
+def degrees(stack: Stack) -> None:
     """Pop 1 value from the stack, convert it to degrees, and push the result to the stack"""
-    return _push(stack, math.degrees(stack.pop()))
+    stack.push(math.degrees(stack.pop()))
 
 
-def radians(stack: list[float]) -> list[float]:
+def radians(stack: Stack) -> None:
     """Pop 1 value from the stack, convert it to radians, and push the result to the stack"""
-    return _push(stack, math.radians(stack.pop()))
+    stack.push(math.radians(stack.pop()))
 
 
-def sine(stack: list[float]) -> list[float]:
+def sine(stack: Stack) -> None:
     """Pop 1 value from the stack as radians, take its sine, and push the result to the stack"""
-    return _push(stack, math.sin(stack.pop()))
+    stack.push(math.sin(stack.pop()))
 
 
-def cosine(stack: list[float]) -> list[float]:
+def cosine(stack: Stack) -> None:
     """Pop 1 value from the stack as radians, take its cosine, and push the result to the stack"""
-    return _push(stack, math.cos(stack.pop()))
+    stack.push(math.cos(stack.pop()))
 
 
-def round_value(stack: list[float]) -> list[float]:
+def round_value(stack: Stack) -> None:
     """Pop 2 values from the stack, round the second item popped to the precision of the first, and push the result to the stack"""
     precision = stack.pop()
     if not float(precision).is_integer():
-        return _fail(stack, "Precision must be an integer")
+        _fail(stack, "Precision must be an integer")
+        return
     x = stack.pop()
-    return _push(stack, round(x, int(precision)))
+    stack.push(round(x, int(precision)))
 
 
-def pop(stack: list[float]) -> list[float]:
+def pop(stack: Stack) -> None:
     """Pop a single value from the stack"""
     stack.pop()
-    display(stack)
-    return stack
+    print(stack)
 
 
-def clear(stack: list[float]) -> list[float]:
+def clear(stack: Stack) -> None:
     """Clear the entire stack"""
-    print(f"cleared {len(stack)} values")
-    return []
+    print(f"cleared {len(stack.values)} values")
+    stack.values = []
 
 
-def nop(stack: list[float]) -> list[float]:
-    """Do Nothing"""
-    return stack
-
-
-def quit(_: list[float]) -> NoReturn:
+def quit(_: Stack) -> NoReturn:
     """Exit interactive mode"""
     sys.exit(0)
 
-
-def _cond_float_to_int(value: float) -> float | int:
-    if float(value).is_integer():
-        return int(value)
-    return value
-
-
-def _push(stack: list[float], value: float | int) -> list[float]:
-    stack.append(_cond_float_to_int(value))
-    display(stack)
-    return stack
-
-
-def _fail(
-    stack: list[float], message: str, *values: float, push: bool = True
-) -> list[float]:
-    """
-    Called when a computation cannot be done. Prints a message to the screen,
-    and optionally pushes values back onto the stack
-    """
-    if push:
-        stack += values
-    sys.stderr.write(message + "\n")
-    return stack
+def words(stack: Stack) -> None:
+    """Print all defined words to the screen"""

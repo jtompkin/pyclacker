@@ -2,8 +2,8 @@
 import argparse
 import sys
 
-from .version import __version__
-from .stack import Stack
+import pyclacker.version as __version__
+from pyclacker.stack import Stack
 
 
 def get_stack(words_file_path: str | None) -> Stack:
