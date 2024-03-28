@@ -1,15 +1,6 @@
 from collections.abc import Callable
-<<<<<<< HEAD
-from shutil import get_terminal_size
-from textwrap import wrap
-from string import digits
-import sys, os
-
-import pyclacker.stack_actions as sacs
-=======
-import math
 import sys
->>>>>>> betterclass
+import math
 
 
 class Stack:

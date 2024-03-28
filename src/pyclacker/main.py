@@ -2,13 +2,8 @@
 import argparse
 import sys
 
-<<<<<<< HEAD:src/pyclacker/pyclacker.py
 from pyclacker.version import __version__
-from pyclacker.stack import Stack
-=======
-import pyclacker.version as __version__
 from pyclacker.operation import StackOperator
->>>>>>> betterclass:src/pyclacker/main.py
 
 
 def get_stack(words_file_path: str | None) -> StackOperator:
