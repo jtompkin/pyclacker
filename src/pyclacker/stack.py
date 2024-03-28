@@ -4,7 +4,7 @@ from textwrap import wrap
 from string import digits
 import sys, os
 
-from . import stack_actions as sacs
+import pyclacker.stack_actions as sacs
 
 
 class Stack:
