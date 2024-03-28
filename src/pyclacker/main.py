@@ -3,39 +3,33 @@ import argparse
 import sys
 
 import pyclacker.version as __version__
-from pyclacker.stack import Stack
+from pyclacker.operation import StackOperator
 
 
-def get_stack(words_file_path: str | None) -> Stack:
-    stack = Stack()
+def get_stack(words_file_path: str | None) -> StackOperator:
+    operator = StackOperator()
     if words_file_path is None:
-        return stack
+        return operator
     with open(words_file_path, "r") as words_file:
-        good_adds = True
-        for line in words_file:
-            line_split = line.strip().split(" ")
-            if not stack.add_word(["="] + line_split):
-                good_adds = False
-        if not good_adds:
+        if not operator.parse_words_file(words_file):
             sys.stderr.write(
                 "Run `help` to see list of operators that cannot be redefined\n"
             )
-        return stack
+    return operator
 
 
-def interactive(stack: Stack, display_counter: bool) -> None:
+def interactive(operator: StackOperator, display_counter: bool) -> None:
     while True:
         try:
-            stack.parse_input(
-                input(f" {len(stack.stack) if display_counter else ''} > ")
+            operator.parse_input(
+                input(f" {len(operator.stack) if display_counter else ''} > ")
             )
         except EOFError:
             sys.stdout.write("\n")
             return
 
-
-def single_program(program: str, stack: Stack) -> None:
-    stack.parse_input(program)
+def single_program(program: str, operator: StackOperator) -> None:
+    operator.parse_input(program)
 
 
 def main(arguments: list[str] | None = None) -> None:
