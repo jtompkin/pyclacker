@@ -3,7 +3,7 @@ import argparse
 import sys
 
 from pyclacker.version import __version__
-from pyclacker.operation import StackOperator
+from pyclacker.stack import StackOperator
 
 
 def get_stack(words_file_path: str | None) -> StackOperator:
@@ -61,7 +61,7 @@ def main(arguments: list[str] | None = None) -> None:
         "-w",
         "--words-file",
         dest="words_file",
-        help="Path to file containing word definitions. Reads from standard in if '-', which is the default if provided withouth an argument. One definition per line. First word per line is the word itself, the rest is the definition. Ex. sqrt 0.5 ^",
+        help="Path to file containing word definitions. Reads from standard in if '-', which is the default if provided without an argument. One definition per line. First word per line is the word itself, the rest is the definition. Ex. sqrt 0.5 ^",
     )
     parser.add_argument(
         "program",
