@@ -13,9 +13,9 @@ def _fail(stack: Stack, message: str, *values: int | float) -> None:
     sys.stderr.write(message + "\n")
 
 
-# ===============
-# Stack operators
-# ===============
+# ================
+# Stack operations
+# ================
 
 
 def nop(_: Stack) -> None:
@@ -50,11 +50,24 @@ def divide(stack: Stack) -> None:
     and push the result to the stack.
     """
     divisor = stack.pop()
-    if int(divisor) == 0:
+    if divisor == 0:
         _fail(stack, "Cannot divide by 0", divisor)
         return
     dividend = stack.pop()
     stack.push(dividend / divisor)
+
+
+def modulo(stack: Stack) -> None:
+    """
+    Pop 2 values from the stack, divide the second value popped by the first,
+    and push the remainder of the division to the stack.
+    """
+    divisor = stack.pop()
+    if int(divisor) == 0:
+        _fail(stack, "Cannot divide by 0", divisor)
+        return
+    dividend = stack.pop()
+    stack.push(dividend % divisor)
 
 
 def power(stack: Stack) -> None:
@@ -155,15 +168,46 @@ def display(stack: Stack) -> None:
     print(stack)
 
 
+def log(stack: Stack) -> None:
+    """
+    Pop 1 value from the stack, take its logarithm base 10, and push the result
+    to the stack.
+    """
+    value = stack.pop()
+    if value <= 0:
+        _fail(stack, "Cannot take logarithm of non-positive number", value)
+        return
+    stack.push(math.log10(value))
+
+
+def ln(stack: Stack) -> None:
+    """
+    Pop 1 value from the stack, take its natural logarithm, and push the result
+    to the stack.
+    """
+    value = stack.pop()
+    if value <= 0:
+        _fail(stack, "Cannot take logarithm of non-positive number", value)
+        return
+    stack.push(math.log(value, math.e))
+
+
+def stack_sum(stack: Stack) -> None:
+    """Pop all vaues from the stack, sum them, and push the result to the stack."""
+    value = sum(stack.values)
+    stack.values = []
+    stack.push(value)
+
+
+# ===============
+# Meta operations
+# ===============
+
+
 def words(operator: StackOperator) -> None:
     """Print all defined words to the screen."""
     for word, definition in operator.words.items():
         print(f"{word}: {' '.join(definition)}")
-
-
-# ==============
-# Meta operators
-# ==============
 
 
 def help(stack: StackOperator) -> None:
