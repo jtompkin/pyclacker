@@ -95,15 +95,18 @@ class StackOperator(metaclass=ABCMeta):
         raise NotImplementedError()
 
     @parse_length.setter
-    def parse_length(self, _: int, /) -> None:
+    @abstractmethod
+    def parse_length(self, value: int) -> None:
         raise NotImplementedError()
 
     @property
+    @abstractmethod
     def current(self) -> int:
         raise NotImplementedError()
 
     @current.setter
-    def current(self, _: int, /) -> None:
+    @abstractmethod
+    def current(self, value: int) -> None:
         raise NotImplementedError()
 
     @abstractmethod
