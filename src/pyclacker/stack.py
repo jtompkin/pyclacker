@@ -41,12 +41,12 @@ class Stack:
 
 
 def nop(_: Stack) -> None:
-    """Do Nothing"""
+    """Do Nothing."""
     return
 
 
 class Action:
-    """Operates on the stack"""
+    """Operates on the stack."""
 
     def __init__(
         self,
@@ -56,44 +56,51 @@ class Action:
     ) -> None:
         self.pops = pops
         self.pushes = pushes
-        self._action = action
+        self.action = action
+        self.help = self._make_help()
 
-    @property
-    def action(self) -> Callable[[Stack], None]:
-        return self._action
+    def _make_help(self) -> str:
+        help_string = self.action.__doc__
+        if help_string is None:
+            return ""
+        return f'"{" ".join(help_string.strip().split())}"'
 
     def __call__(self, stack: Stack) -> None:
         self.action(stack)
 
 
 def _fail(stack: Stack, message: str, *values: int | float) -> None:
-    """
-    Call when a computation cannot be done. Prints a message to standard error,
-    and pushes `values` back onto the stack
-    """
+    """Print `message` and push any `values` to the `stack`."""
     stack.push(*values, display=False)
     sys.stderr.write(message + "\n")
 
 
 def add(stack: Stack) -> None:
-    """Pop 2 values from the stack, add them, and push the result to the stack"""
+    """Pop 2 values from the stack, add them, and push the result to the stack."""
     stack.push(stack.pop() + stack.pop())
 
 
 def subtract(stack: Stack) -> None:
-    """Pop 2 values from the stack, subtract the second item popped from the first, and push the result to the stack"""
+    """
+    Pop 2 values from the stack, subtract the second item popped from the first,
+    and push the result to the stack.
+    """
     x = stack.pop()
     y = stack.pop()
     stack.push(y - x)
 
 
 def multiply(stack: Stack) -> None:
-    """Pop 2 values from the stack, multiply them, and push the result to the stack"""
+    """Pop 2 values from the stack, multiply them, and push the result to the
+    stack."""
     stack.push(stack.pop() * stack.pop())
 
 
 def divide(stack: Stack) -> None:
-    """Pop 2 values from the stack, divide the second value popped by the first, and push the result to the stack"""
+    """
+    Pop 2 values from the stack, divide the second value popped by the first,
+    and push the result to the stack.
+    """
     divisor = stack.pop()
     if int(divisor) == 0:
         _fail(stack, "Cannot divide by 0", divisor)
@@ -103,7 +110,10 @@ def divide(stack: Stack) -> None:
 
 
 def power(stack: Stack) -> None:
-    """Pop 2 values from the stack, raise the second value popped to the power of the first, and push the result to the stack"""
+    """
+    Pop 2 values from the stack, raise the second value popped to the power of
+    the first, and push the result to the stack.
+    """
     exponent = stack.pop()
     base = stack.pop()
     if not float(exponent).is_integer() and base < 0:
@@ -121,7 +131,10 @@ def power(stack: Stack) -> None:
 
 
 def factorial(stack: Stack) -> None:
-    """Pop 1 value from the stack, take its factorial, and push the result to the stack"""
+    """
+    Pop 1 value from the stack, take its factorial, and push the result to the
+    stack.
+    """
     x = stack.pop()
     if not isinstance(x, int):
         _fail(stack, "Cannot take the factorial of non-integer number", x)
@@ -133,27 +146,42 @@ def factorial(stack: Stack) -> None:
 
 
 def degrees(stack: Stack) -> None:
-    """Pop 1 value from the stack, convert it to degrees, and push the result to the stack"""
+    """
+    Pop 1 value from the stack, convert it to degrees, and push the result to
+    the stack.
+    """
     stack.push(math.degrees(stack.pop()))
 
 
 def radians(stack: Stack) -> None:
-    """Pop 1 value from the stack, convert it to radians, and push the result to the stack"""
+    """
+    Pop 1 value from the stack, convert it to radians, and push the result to
+    the stack.
+    """
     stack.push(math.radians(stack.pop()))
 
 
 def sine(stack: Stack) -> None:
-    """Pop 1 value from the stack as radians, take its sine, and push the result to the stack"""
+    """
+    Pop 1 value from the stack as radians, take its sine, and push the result to
+    the stack.
+    """
     stack.push(math.sin(stack.pop()))
 
 
 def cosine(stack: Stack) -> None:
-    """Pop 1 value from the stack as radians, take its cosine, and push the result to the stack"""
+    """
+    Pop 1 value from the stack as radians, take its cosine, and push the result
+    to the stack.
+    """
     stack.push(math.cos(stack.pop()))
 
 
 def round_value(stack: Stack) -> None:
-    """Pop 2 values from the stack, round the second item popped to the precision of the first, and push the result to the stack"""
+    """
+    Pop 2 values from the stack, round the second item popped to the precision
+    of the first, and push the result to the stack.
+    """
     precision = stack.pop()
     if not float(precision).is_integer():
         _fail(stack, "Precision must be an integer")
@@ -163,17 +191,17 @@ def round_value(stack: Stack) -> None:
 
 
 def pop(stack: Stack) -> None:
-    """Pop a single value from the stack"""
+    """Pop a single value from the stack."""
     stack.pop()
     print(stack)
 
 
 def clear(stack: Stack) -> None:
-    """Clear the entire stack"""
+    """Clear the entire stack."""
     print(f"cleared {len(stack.values)} values")
     stack.values = []
 
 
 def display(stack: Stack) -> None:
-    """Print values from the stack"""
+    """Print values from the stack."""
     print(stack)

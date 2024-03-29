@@ -5,30 +5,30 @@ from textwrap import wrap
 from string import digits
 import sys, os
 
-from pyclacker import stack as stk
+from pyclacker import stack
 
 
 class StackOperator:
-    def __init__(self, initial_stack: stk.Stack | None = None) -> None:
+    def __init__(self, initial_stack: stack.Stack | None = None) -> None:
         if initial_stack is None:
-            self._stack = stk.Stack()
+            self.stack = stack.Stack()
         else:
-            self._stack = initial_stack
-        self.operators: dict[str, stk.Action | MetaOperator] = {
-            "+": stk.Action(2, 1, stk.add),
-            "-": stk.Action(2, 1, stk.subtract),
-            "*": stk.Action(2, 1, stk.multiply),
-            "/": stk.Action(2, 1, stk.divide),
-            "^": stk.Action(2, 1, stk.power),
-            "!": stk.Action(1, 1, stk.factorial),
-            "deg": stk.Action(1, 1, stk.degrees),
-            "rad": stk.Action(1, 1, stk.radians),
-            "sin": stk.Action(1, 1, stk.sine),
-            "cos": stk.Action(1, 1, stk.cosine),
-            "round": stk.Action(2, 1, stk.round_value),
-            ".": stk.Action(0, 0, stk.display),
-            ",": stk.Action(1, 0, stk.pop),
-            "clear": stk.Action(0, 0, stk.clear),
+            self.stack = initial_stack
+        self.operators: dict[str, stack.Action | MetaOperator] = {
+            "+": stack.Action(2, 1, stack.add),
+            "-": stack.Action(2, 1, stack.subtract),
+            "*": stack.Action(2, 1, stack.multiply),
+            "/": stack.Action(2, 1, stack.divide),
+            "^": stack.Action(2, 1, stack.power),
+            "!": stack.Action(1, 1, stack.factorial),
+            "deg": stack.Action(1, 1, stack.degrees),
+            "rad": stack.Action(1, 1, stack.radians),
+            "sin": stack.Action(1, 1, stack.sine),
+            "cos": stack.Action(1, 1, stack.cosine),
+            "round": stack.Action(2, 1, stack.round_value),
+            ".": stack.Action(0, 0, stack.display),
+            ",": stack.Action(1, 0, stack.pop),
+            "clear": stack.Action(0, 0, stack.clear),
             "quit": MetaOperator(_quit),
             "cls": MetaOperator(_clear),
             "words": MetaOperator(_words),
@@ -41,14 +41,13 @@ class StackOperator:
         self.parse_length: int = 0
         self.current: int = 0
 
-    @property
-    def stack(self) -> stk.Stack:
-        return self._stack
-
     def add_word(self, definition: list[str]) -> bool:
         """
-        Add word and definition. `definition` should include
-        '=' as first item. Returns `False` if unsuccessful
+        Add `definition` to dictionary of words and return `False` if unsuccessful.
+
+        Arguments:
+        `definition` -- Includes word to define and definition. First item
+        should be '='.
         """
         if len(definition) < 2:
             return True
@@ -63,8 +62,7 @@ class StackOperator:
         return True
 
     def parse_words_file(self, words_file: TextIO) -> bool:
-        """Parse file and add words from it. Return `False` if any adds were
-        unsuccessful"""
+        """Parse file and return `False` if any adds were unsuccessful."""
         good_adds = True
         for line in words_file:
             line_split = line.strip().split(" ")
@@ -73,6 +71,7 @@ class StackOperator:
         return good_adds
 
     def parse_input(self, input_string: str) -> None:
+        """Split `input_string` into tokens and handle each token."""
         words = input_string.strip().split(" ")
         self.parse_length = len(words)
         self.current = 0
@@ -101,10 +100,10 @@ class StackOperator:
             self.current += 1
 
     def _execute(self, token: str) -> None:
-        operator = self.operators.get(token, stk.Action())
+        operator = self.operators.get(token, stack.Action())
         if len(self.stack) < operator.pops:
             return
-        if isinstance(operator, stk.Action):
+        if isinstance(operator, stack.Action):
             operator(self.stack)
             return
         operator(self)
@@ -112,31 +111,34 @@ class StackOperator:
 
 class MetaOperator:
     """
-    Operator that does not operate on the stack,
-    only uses information from a `Stack` instance
+    Operator that does not operate on the stack, only uses information from
+    a `StackOperator` instance
     """
 
     def __init__(self, action: Callable[[StackOperator], None]):
         self.pops = 0
         self.pushes = 0
-        self._action = action
+        self.action = action
+        self.help = self._make_help()
 
-    @property
-    def action(self) -> Callable[[StackOperator], None]:
-        return self._action
+    def _make_help(self) -> str:
+        help_string = self.action.__doc__
+        if help_string is None:
+            return ""
+        return f'"{" ".join(help_string.strip().split())}"'
 
     def __call__(self, value: StackOperator) -> None:
         self.action(value)
 
 
 def _words(operator: StackOperator) -> None:
-    """Print all defined words to the screen"""
+    """Print all defined words to the screen."""
     for word, definition in operator.words.items():
         print(f"{word}: {' '.join(definition)}")
 
 
 def _help(stack: StackOperator) -> None:
-    """Print information about available operators to the screen"""
+    """Print information about available operators to the screen."""
     extra_space = 2
     prefix = "operator: "
     max_length = max(len(i) for i in stack.operators) + len(prefix)
@@ -144,14 +146,9 @@ def _help(stack: StackOperator) -> None:
     for token, operator in stack.operators.items():
         operator_help = f"{prefix}{token}"
         padding = max_length - len(operator_help) + extra_space
-        description_help = operator.action.__doc__
-        if description_help is None:
-            description_help = ""
-        else:
-            description_help = f'"{description_help}"'
         sys.stdout.write(operator_help + " " * padding)
         for chunk in wrap(
-            description_help,
+            operator.help,
             term_width,
             subsequent_indent=" " * (max_length + extra_space),
         ):
@@ -159,7 +156,7 @@ def _help(stack: StackOperator) -> None:
 
 
 def _clear(_: StackOperator) -> None:
-    """Clear the terminal screen"""
+    """Clear the terminal screen."""
     if sys.platform.startswith("win32"):
         os.system("cls")
     elif sys.platform.startswith(("linux", "darwin")):
@@ -167,5 +164,5 @@ def _clear(_: StackOperator) -> None:
 
 
 def _quit(_: StackOperator) -> NoReturn:
-    """Exit interactive mode"""
+    """Exit interactive mode."""
     sys.exit(0)

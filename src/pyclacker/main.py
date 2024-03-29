@@ -28,6 +28,7 @@ def interactive(operator: StackOperator, display_counter: bool) -> None:
             sys.stdout.write("\n")
             return
 
+
 def single_program(program: str, operator: StackOperator) -> None:
     operator.parse_input(program)
 
