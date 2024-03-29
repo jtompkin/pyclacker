@@ -11,6 +11,7 @@ class Stack(interfaces.Stack):
             self._values: list[int | float] = []
         else:
             self._values = initial
+        self._stash = 0
 
     @property
     def values(self) -> list[int | float]:
@@ -19,6 +20,14 @@ class Stack(interfaces.Stack):
     @values.setter
     def values(self, value: list[int | float]):
         self._values = value
+
+    @property
+    def stash(self) -> int | float:
+        return self._stash
+
+    @stash.setter
+    def stash(self, value: int | float) -> None:
+        self._stash = value
 
     def push(self, *values: int | float, display: bool = True) -> None:
         """Push each value from `values` onto stack and optionally display"""
@@ -66,6 +75,8 @@ class StackOperator(interfaces.StackOperator):
             "sum": actions.StackAction(1, 1, operations.stack_sum),
             ".": actions.StackAction(0, 0, operations.display),
             ",": actions.StackAction(1, 0, operations.pop),
+            "stash": actions.StackAction(1, 0, operations.stash),
+            "pull": actions.StackAction(0, 1, operations.pull),
             "clear": actions.StackAction(0, 0, operations.clear),
             "quit": actions.MetaAction(operations.quit),
             "cls": actions.MetaAction(operations.clear_screen),
@@ -75,6 +86,7 @@ class StackOperator(interfaces.StackOperator):
         self._words: dict[str, list[str]] = {
             "sqrt": ["0.5", "^"],
             "pi": ["3.141592653589793"],
+            "logx": ["log", "stash", "log", "pull", "/"],
         }
         self._parse_length: int = 0
         self._current: int = 0
@@ -158,10 +170,8 @@ class StackOperator(interfaces.StackOperator):
         try:
             display = self.current == self.parse_length - 1
             self.stack.push(float(token), display=display)
-            return
         except ValueError:
             self._execute(token)
-            return
 
     def _expand_word(self, word: str) -> None:
         for token in self.words[word]:

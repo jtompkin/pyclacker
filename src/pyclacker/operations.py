@@ -199,6 +199,16 @@ def stack_sum(stack: Stack) -> None:
     stack.push(value)
 
 
+def stash(stack: Stack) -> None:
+    """Pop 1 value from the stack and stash it."""
+    stack.stash = stack.pop()
+
+
+def pull(stack: Stack) -> None:
+    """Copy value from the stash and push it to the stack."""
+    stack.push(stack.stash)
+
+
 # ===============
 # Meta operations
 # ===============

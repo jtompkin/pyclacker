@@ -18,6 +18,16 @@ class Stack(metaclass=ABCMeta):
     def values(self, value: list[int | float]) -> None:
         raise NotImplementedError()
 
+    @property
+    @abstractmethod
+    def stash(self) -> int | float:
+        raise NotImplementedError()
+
+    @stash.setter
+    @abstractmethod
+    def stash(self, value: int | float) -> None:
+        raise NotImplementedError()
+
     @abstractmethod
     def push(self, *values: int | float, display: bool = True) -> None:
         raise NotImplementedError()
