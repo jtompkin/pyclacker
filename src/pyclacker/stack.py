@@ -86,6 +86,7 @@ class StackOperator(interfaces.StackOperator):
         self._words: dict[str, list[str]] = {
             "sqrt": ["0.5", "^"],
             "pi": ["3.141592653589793"],
+            "e": ["2.718281828459045"],
             "logx": ["log", "stash", "log", "pull", "/"],
         }
         self._parse_length: int = 0
