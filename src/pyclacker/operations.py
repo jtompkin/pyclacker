@@ -24,31 +24,24 @@ def nop(_: Stack) -> None:
 
 
 def add(stack: Stack) -> None:
-    """Pop 2 values from the stack, add them, and push the result to the stack."""
+    """Pop 'a', 'b'; push the result of 'a' + 'b'"""
     stack.push(stack.pop() + stack.pop())
 
 
 def subtract(stack: Stack) -> None:
-    """
-    Pop 2 values from the stack, subtract the second item popped from the first,
-    and push the result to the stack.
-    """
+    """Pop 'a', 'b'; push the result of 'b' - 'a'"""
     x = stack.pop()
     y = stack.pop()
     stack.push(y - x)
 
 
 def multiply(stack: Stack) -> None:
-    """Pop 2 values from the stack, multiply them, and push the result to the
-    stack."""
+    """Pop 'a', 'b'; push the result of 'a' * 'b'"""
     stack.push(stack.pop() * stack.pop())
 
 
 def divide(stack: Stack) -> None:
-    """
-    Pop 2 values from the stack, divide the second value popped by the first,
-    and push the result to the stack.
-    """
+    """Pop 'a', 'b'; push the result of 'b' / 'a'"""
     divisor = stack.pop()
     if divisor == 0:
         _fail(stack, "Cannot divide by 0", divisor)
@@ -58,10 +51,7 @@ def divide(stack: Stack) -> None:
 
 
 def modulo(stack: Stack) -> None:
-    """
-    Pop 2 values from the stack, divide the second value popped by the first,
-    and push the remainder of the division to the stack.
-    """
+    """Pop 'a', 'b'; push the remainder of 'b' / 'a'"""
     divisor = stack.pop()
     if int(divisor) == 0:
         _fail(stack, "Cannot divide by 0", divisor)
@@ -71,10 +61,7 @@ def modulo(stack: Stack) -> None:
 
 
 def power(stack: Stack) -> None:
-    """
-    Pop 2 values from the stack, raise the second value popped to the power of
-    the first, and push the result to the stack.
-    """
+    """Pop 'a', 'b'; push the result of raising 'b' to the power 'a'"""
     exponent = stack.pop()
     base = stack.pop()
     if not float(exponent).is_integer() and base < 0:
@@ -92,10 +79,7 @@ def power(stack: Stack) -> None:
 
 
 def factorial(stack: Stack) -> None:
-    """
-    Pop 1 value from the stack, take its factorial, and push the result to the
-    stack.
-    """
+    """Pop 'a'; push the factorial of 'a'"""
     x = stack.pop()
     if not isinstance(x, int):
         _fail(stack, "Cannot take the factorial of non-integer number", x)
@@ -107,42 +91,28 @@ def factorial(stack: Stack) -> None:
 
 
 def degrees(stack: Stack) -> None:
-    """
-    Pop 1 value from the stack, convert it to degrees, and push the result to
-    the stack.
-    """
+    """Pop 'a'; push the result of converting 'a' from radians to degrees"""
     stack.push(math.degrees(stack.pop()))
 
 
 def radians(stack: Stack) -> None:
-    """
-    Pop 1 value from the stack, convert it to radians, and push the result to
-    the stack.
-    """
+    """Pop 'a'; push the result of converting 'a' from degrees to radians"""
     stack.push(math.radians(stack.pop()))
 
 
 def sine(stack: Stack) -> None:
-    """
-    Pop 1 value from the stack as radians, take its sine, and push the result to
-    the stack.
-    """
+    """Pop 'a'; push the sine of 'a'"""
     stack.push(math.sin(stack.pop()))
 
 
 def cosine(stack: Stack) -> None:
-    """
-    Pop 1 value from the stack as radians, take its cosine, and push the result
-    to the stack.
-    """
+    """Pop 'a'; push the cosine of 'a'"""
     stack.push(math.cos(stack.pop()))
 
 
 def round_value(stack: Stack) -> None:
-    """
-    Pop 2 values from the stack, round the second item popped to the precision
-    of the first, and push the result to the stack.
-    """
+    """Pop 'a', 'b'; Push the result of rounding 'a' to 'b' number of decimal
+    places."""
     precision = stack.pop()
     if not float(precision).is_integer():
         _fail(stack, "Precision must be an integer")
@@ -152,13 +122,13 @@ def round_value(stack: Stack) -> None:
 
 
 def pop(stack: Stack) -> None:
-    """Pop a single value from the stack."""
+    """Pop 'a'; do not push anything"""
     stack.pop()
     print(stack)
 
 
 def clear(stack: Stack) -> None:
-    """Clear the entire stack."""
+    """Pop the entire stack."""
     print(f"cleared {len(stack.values)} values")
     stack.values = []
 
@@ -169,10 +139,7 @@ def display(stack: Stack) -> None:
 
 
 def log(stack: Stack) -> None:
-    """
-    Pop 1 value from the stack, take its logarithm base 10, and push the result
-    to the stack.
-    """
+    """Pop 'a'; push the logarithm base 10 of 'a'"""
     value = stack.pop()
     if value <= 0:
         _fail(stack, "Cannot take logarithm of non-positive number", value)
@@ -181,10 +148,7 @@ def log(stack: Stack) -> None:
 
 
 def ln(stack: Stack) -> None:
-    """
-    Pop 1 value from the stack, take its natural logarithm, and push the result
-    to the stack.
-    """
+    """Pop 'a'; push the natural logarithm of 'a'"""
     value = stack.pop()
     if value <= 0:
         _fail(stack, "Cannot take logarithm of non-positive number", value)
@@ -193,19 +157,19 @@ def ln(stack: Stack) -> None:
 
 
 def stack_sum(stack: Stack) -> None:
-    """Pop all vaues from the stack, sum them, and push the result to the stack."""
+    """Pop all vaues from the stack; push the result of summing all values"""
     value = sum(stack.values)
     stack.values = []
     stack.push(value)
 
 
 def stash(stack: Stack) -> None:
-    """Pop 1 value from the stack and stash it."""
+    """Pop 'a'; stash 'a'"""
     stack.stash = stack.pop()
 
 
 def pull(stack: Stack) -> None:
-    """Copy value from the stash and push it to the stack."""
+    """Push the value currently stored in the stash"""
     stack.push(stack.stash)
 
 
