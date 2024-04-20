@@ -1,5 +1,7 @@
 # pyclacker
 
+Development has moved to [goclacker](https://github.com/jtompkin/goclacker). I watched like 2 YouTube videos and decided Go is my entire life now. So Go there.
+
 Command line reverse polish notation (RPN) calculator. Stack based and ready to party.
 
 Josh Tompkin
